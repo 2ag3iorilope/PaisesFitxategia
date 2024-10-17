@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Scanner;
 
@@ -52,7 +55,7 @@ public class PaisFitxategiak {
             System.out.println("4. Iritziak enumeratu (populazioaren arabera).");
             System.out.println("5. Iritzi berri bat gehitu.");
             System.out.println("6. Iritzi bat ezabatu.");
-            System.out.println("7. Irten.");
+            System.out.println("7. Kopiatu fitxategia.");
             System.out.print("Aukeratu aukera (1-7): ");
             option = sc.nextInt();
             sc.nextLine(); // Consume the newline character
@@ -77,12 +80,15 @@ public class PaisFitxategiak {
                     ezabatuIritziBat(fitxategia, sc);
                     break;
                 case 7:
+                   kopiatuFitxategia(fitxategia, sc);
+                    break;
+                case 8:
                     System.out.println("Irten da.");
                     break;
                 default:
                     System.out.println("Aukera ezegokia. Saiatu berriro.");
             }
-        } while (option != 7);
+        } while (option != 9);
         sc.close();
     }
 
@@ -289,5 +295,46 @@ public class PaisFitxategiak {
             System.out.println("Errorea fitxategia berriz izendatzean.");
         }
     }
+    public static void kopiatuFitxategia(File fitxategia, Scanner sc) {
+        // Verificar si el archivo de origen existe
+        if (!fitxategia.exists()) {
+            System.out.println("Errorea: Fitxategia ez da aurkitu: " + fitxategia.getAbsolutePath());
+            return;
+        }
 
+        System.out.println("Sartu kopia gorde nahi duzun direktorioaren helbidea:");
+        String direktorioString = sc.nextLine();
+        File direktorio = new File(direktorioString);
+
+        // Verificar que el directorio existe
+        if (!direktorio.isDirectory()) {
+            System.out.println("Errorea: Ez da aurkitu direktorioa: " + direktorioString);
+            return;
+        }
+
+        System.out.println("Sartu kopia gorde nahi duzun fitxategiaren izena : ");
+        String izenaKopia = sc.nextLine() + ".txt";
+
+        // Verificar que el nombre no esté vacío
+        if (izenaKopia.trim().isEmpty()) {
+            System.out.println("Errorea: Fitxategiaren izena hutsa da.");
+            return;
+        }
+
+        Path fitxategiDestinokoa = Paths.get(direktorio.getAbsolutePath(), izenaKopia);
+
+        // Verificar que no existe un archivo con el mismo nombre en la ubicación de destino
+        if (Files.exists(fitxategiDestinokoa)) {
+            System.out.println("Errorea: Fitxategi honekin berdina dago jadanik: " + fitxategiDestinokoa.toAbsolutePath());
+            return;
+        }
+
+        // Crear la copia del archivo
+        try {
+            Files.copy(fitxategia.toPath(), fitxategiDestinokoa);
+            System.out.println("Fitxategia kopiatuta: " + fitxategiDestinokoa.toAbsolutePath());
+        } catch (IOException e) {
+            System.out.println("Errorea fitxategia kopiatzean: " + e.getMessage());
+        }
+    }
 }
