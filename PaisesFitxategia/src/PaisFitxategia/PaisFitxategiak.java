@@ -95,12 +95,12 @@ public class PaisFitxategiak {
         System.out.println("\nMenu:");
         System.out.println("1. Fitxategia berridatzi taulako datuekin");
         System.out.println("2. Utzi fitxategia hutsik (eska iezaiozu baieztapena)");
-        System.out.println("3. Erakutsi fitxategiaren ruta");
-        System.out.println("4. Fitxategia berrizendatu");
-        System.out.println("5. Fitxategia ezabatu");
-        System.out.println("6. Fitxategi berria sortu");
-        System.out.println("7. Erakutsi fitxategiaren tamaina");
-        System.out.println("8. Irakurri fitxategia");
+        System.out.println("3. Bilatu eta erakutsi fitxategiko iritzia bere kodearekin");
+        System.out.println("4. Iragazi eta erakutsi fitxategiko iritzien lista");
+        System.out.println("5. Gehitu iritzi bat fitxategira");
+        System.out.println("6. Fitxategia berrizendatu");
+        System.out.println("7. Fitxategia ezabatu");
+        System.out.println("8. Fitxategi berri bat sortu");
         System.out.println("9. Irten");
 
         System.out.print("Aukeratu zenbakia: ");
@@ -111,13 +111,13 @@ public class PaisFitxategiak {
         sc.nextLine(); // Limpiar buffer del scanner
         switch (aukera) {
             case 1 -> idatziTaulaFitxategian(fitxategia);
-            case 2 -> utziFitxategiaHutsik(fitxategia, sc); // Implementación de la segunda opción
-            case 3 -> System.out.println("Fitxategiaren ruta: " + fitxategia.getAbsolutePath());
-            case 4 -> berrizendatuFitxategia(fitxategia, sc);
-            case 5 -> ezabatuFitxategia(fitxategia);
-            case 6 -> sortuFitxategiBerria(sc);
-            case 7 -> System.out.println("Fitxategiaren tamaina: " + fitxategia.length() + " bytes");
-            case 8 -> irakurriFitxategia(fitxategia);
+            case 2 -> utziFitxategiaHutsik(fitxategia, sc);
+            case 3 -> bilatuFitxategian(fitxategia, sc);
+            case 4 -> iragaziFitxategian(fitxategia, sc);
+            case 5 -> gehituIritziBat(fitxategia, sc); // Implementación de la quinta opción
+            case 6 -> berrizendatuFitxategia(fitxategia, sc);
+            case 7 -> ezabatuFitxategia(fitxategia);
+            case 8 -> sortuFitxategiBerria(sc);
             case 9 -> System.out.println("Agur!");
             default -> System.out.println("Aukera ez da balioduna.");
         }
@@ -156,6 +156,110 @@ public class PaisFitxategiak {
         } else {
             System.out.println("Fitxategia ez da hutsik utzi.");
         }
+    }
+
+    // Tercera opción del menú: Buscar y mostrar un registro con su código
+    public static void bilatuFitxategian(File fitxategia, Scanner sc) {
+        System.out.println("Sartu kodea (adibidez, 31) bilatzeko:");
+        String kodeaBilatu = sc.nextLine();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fitxategia))) {
+            String line;
+            boolean found = false;
+            // Leer el archivo línea por línea
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith(kodeaBilatu + ";")) {
+                    System.out.println("Aurkitutako iritzia: " + line);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                System.out.println("Ez da aurkitu iritzia kode honekin: " + kodeaBilatu);
+            }
+        } catch (IOException e) {
+            System.out.println("Errorea fitxategia irakurtzean: " + e.getMessage());
+        }
+    }
+
+    // Cuarta opción del menú: Filtrar y mostrar registros
+    public static void iragaziFitxategian(File fitxategia, Scanner sc) {
+        System.out.println("Sartu gutxieneko populazioa iragazteko:");
+        int gutxienekoPopulazioa = sc.nextInt();
+        sc.nextLine(); // Limpiar el buffer
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fitxategia))) {
+            String line;
+            boolean found = false;
+            System.out.println("Fitxategiko iritzien lista:");
+            while ((line = reader.readLine()) != null) {
+                if (!line.startsWith("PAISES 1.0")) { // Ignorar la primera línea
+                    String[] parts = line.split(";");
+                    if (parts.length > 4) { // Verifica que la línea tenga suficientes campos
+                        double populazioa = Double.parseDouble(parts[4]);
+                        if (populazioa > gutxienekoPopulazioa) {
+                            System.out.println(line);
+                            found = true;
+                        }
+                    }
+                }
+            }
+            if (!found) {
+                System.out.println("Ez da aurkitu iritzirik populazio minimo honekin: " + gutxienekoPopulazioa);
+            }
+        } catch (IOException e) {
+            System.out.println("Errorea fitxategia irakurtzean: " + e.getMessage());
+        }
+    }
+
+    // Quinta opción del menú: Añadir un registro al final del archivo
+    public static void gehituIritziBat(File fitxategia, Scanner sc) {
+        System.out.println("Sartu kodea (adibidez, 31):");
+        String kodea = sc.nextLine();
+        
+        // Comprobar si el código ya existe
+        if (codigoExistente(fitxategia, kodea)) {
+            System.out.println("Kodea jada existitzen da. Mesedez, beste kode bat aukeratu.");
+            return;
+        }
+
+        System.out.println("Sartu estatua:");
+        String estatua = sc.nextLine();
+        System.out.println("Sartu bizitzen esperantza:");
+        int biziEsperantza = sc.nextInt();
+        sc.nextLine(); // Limpiar el buffer
+        System.out.println("Sartu dataren irailak (YYYY-MM-DD formatua):");
+        String dataSortuStr = sc.nextLine();
+        LocalDate dataSortu = LocalDate.parse(dataSortuStr);
+        System.out.println("Sartu populazioa:");
+        double populazioa = sc.nextDouble();
+        sc.nextLine(); // Limpiar el buffer
+        System.out.println("Sartu kapitala:");
+        String kapitala = sc.nextLine();
+
+        // Añadir registro al archivo
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategia, true))) {
+            writer.write(kodea + ";" + estatua + ";" + biziEsperantza + ";" + dataSortu + ";" + populazioa + ";" + kapitala);
+            writer.newLine();
+            System.out.println("Iritzi bat gehitu da fitxategira: " + kodea);
+        } catch (IOException e) {
+            System.out.println("Errorea fitxategira iritzi bat gehitzean: " + e.getMessage());
+        }
+    }
+
+    // Comprobar si el código ya existe en el archivo
+    private static boolean codigoExistente(File fitxategia, String kodea) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fitxategia))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith(kodea + ";")) {
+                    return true; // El código ya existe
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Errorea fitxategia irakurtzean: " + e.getMessage());
+        }
+        return false; // El código no existe
     }
 
     public static void berrizendatuFitxategia(File fitxategia, Scanner sc) {
