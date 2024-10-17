@@ -31,11 +31,11 @@ public class PaisFitxategiak {
         KonprobatuEdoSortuFitxategia(helbideOsoaString, fitxategiIzenaString);
 
         // Menua erakutsi
-        File fitxatefiosoaFile = new File(helbideOsoaString, fitxategiIzenaString);
+        File fitxategiFile = new File(helbideOsoaString, fitxategiIzenaString);
         int aukera;
         do {
             aukera = erakutsiMenua(sc);
-            kudeatuAukera(aukera, fitxatefiosoaFile, sc);
+            kudeatuAukera(aukera, fitxategiFile, sc);
         } while (aukera != 9); // Salir del menú cuando elija la opción 9
     }
 
@@ -58,24 +58,24 @@ public class PaisFitxategiak {
 
     public static void KonprobatuEdoSortuFitxategia(String helbideOsoa, String fitxategiIzena) {
         File dirFile = new File(helbideOsoa);
-        File fitxatefiosoaFile = new File(dirFile, fitxategiIzena);
+        File fitxategiaFile = new File(dirFile, fitxategiIzena);
 
-        if (fitxatefiosoaFile.exists() && fitxatefiosoaFile.isFile()) {
+        if (fitxategiaFile.exists() && fitxategiaFile.isFile()) {
             System.out.println("Fitxategia existitzen da.");
-            try (BufferedReader reader = new BufferedReader(new FileReader(fitxatefiosoaFile))) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(fitxategiaFile))) {
                 String firstLine = reader.readLine();
                 if ("PAISES 1.0".equals(firstLine)) {
                     System.out.println("Lehenengo lerroa zuzena da: " + firstLine);
                 } else {
                     System.out.println("Lehenengo lerroa ez da zuzena: " + firstLine);
-                    BerridatziFitxategia(fitxatefiosoaFile);
+                    BerridatziFitxategia(fitxategiaFile);
                 }
             } catch (IOException e) {
                 System.out.println("Errorea fitxategia irakurtzean: " + e.getMessage());
             }
         } else {
             System.out.println("Fitxategia ez dago, sortzen saiatuko da...");
-            BerridatziFitxategia(fitxatefiosoaFile);
+            BerridatziFitxategia(fitxategiaFile);
         }
     }
 
@@ -94,7 +94,7 @@ public class PaisFitxategiak {
     public static int erakutsiMenua(Scanner sc) {
         System.out.println("\nMenu:");
         System.out.println("1. Fitxategia berridatzi taulako datuekin");
-        System.out.println("2. Gehitu edukia fitxategian");
+        System.out.println("2. Utzi fitxategia hutsik (eska iezaiozu baieztapena)");
         System.out.println("3. Erakutsi fitxategiaren ruta");
         System.out.println("4. Fitxategia berrizendatu");
         System.out.println("5. Fitxategia ezabatu");
@@ -111,7 +111,7 @@ public class PaisFitxategiak {
         sc.nextLine(); // Limpiar buffer del scanner
         switch (aukera) {
             case 1 -> idatziTaulaFitxategian(fitxategia);
-            case 2 -> gehituFitxategian(fitxategia, sc);
+            case 2 -> utziFitxategiaHutsik(fitxategia, sc); // Implementación de la segunda opción
             case 3 -> System.out.println("Fitxategiaren ruta: " + fitxategia.getAbsolutePath());
             case 4 -> berrizendatuFitxategia(fitxategia, sc);
             case 5 -> ezabatuFitxategia(fitxategia);
@@ -125,8 +125,10 @@ public class PaisFitxategiak {
 
     public static void idatziTaulaFitxategian(File fitxategia) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategia))) {
+            // Escribe la primera línea "PAISES 1.0"
             writer.write("PAISES 1.0");
             writer.newLine();
+            // Escribe los datos de los arrays en formato CSV
             for (int i = 0; i < Kodea.length; i++) {
                 writer.write(Kodea[i] + ";" + Estatua[i] + ";" + BiziEsperantza[i] + ";" + DataSortu[i] + ";"
                         + Poblazioa[i] + ";" + Kapitala[i]);
@@ -138,15 +140,21 @@ public class PaisFitxategiak {
         }
     }
 
-    public static void gehituFitxategian(File fitxategia, Scanner sc) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategia, true))) {
-            System.out.println("Sartu fitxategian gehituko duzun testua:");
-            String text = sc.nextLine();
-            writer.write(text);
-            writer.newLine();
-            System.out.println("Testua gehitu da.");
-        } catch (IOException e) {
-            System.out.println("Errorea testua gehitzean: " + e.getMessage());
+    // Segunda opción del menú: Dejar el archivo en blanco con confirmación
+    public static void utziFitxategiaHutsik(File fitxategia, Scanner sc) {
+        System.out.println("Ziur zaude fitxategia hutsik utzi nahi duzula? (bai/ez): ");
+        String erantzuna = sc.nextLine().toLowerCase();
+
+        if ("bai".equals(erantzuna)) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategia))) {
+                writer.write("PAISES 1.0");
+                writer.newLine(); // Deja el archivo en blanco y escribe la primera línea
+                System.out.println("Fitxategia hutsik utzi da eta lehen lerroa jarri da: PAISES 1.0");
+            } catch (IOException e) {
+                System.out.println("Errorea fitxategia hutsik uztean: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Fitxategia ez da hutsik utzi.");
         }
     }
 
