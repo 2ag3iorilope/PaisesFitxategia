@@ -12,329 +12,407 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Scanner;
 
+// TODO: Auto-generated Javadoc
 /**
- * The Class PaisFitxategiak.
- * Programa honek fitxategi-izen bat eta direktorio bat eskatzen dizkio erabiltzaileari. 
- * Gero, egiaztatu fitxategia direktorio horretan dagoen, eta, bestela, sortu.
+ * The Class PaisFitxategiak. Programa honek fitxategi-izen bat eta direktorio
+ * bat eskatzen dizkio erabiltzaileari. Gero, egiaztatu fitxategia direktorio
+ * horretan dagoen, eta, bestela, sortu.
  */
 public class PaisFitxategiak {
 
-    static String Kodea[] = {"31", "376", "90", "261", "685", "213", "291", "595", "30", "964"};
-    static String Estatua[] = {"Holanda", "Andorra", "Turkia", "Madagascar", "Samoa Occidental",
-            "Argelia", "Eritrea", "Paraguay", "Grecia", "Irak"};
-    static int BiziEsperantza[] = {78, 0, 67, 52, 68, 70, 0, 68, 78, 66};
-    static LocalDate DataSortu[] = {LocalDate.of(1581, 7, 26), LocalDate.of(1993, 3, 14),
-            LocalDate.of(1923, 10, 29), LocalDate.of(1960, 6, 26), LocalDate.of(1962, 1, 1),
-            LocalDate.of(1962, 7, 5), LocalDate.of(1993, 5, 24), LocalDate.of(1825, 8, 25),
-            LocalDate.of(1830, 2, 3), LocalDate.of(1958, 7, 14)};
-    static double Poblazioa[] = {15460000, 64000, 61058000, 13651000, 165000,
-            27959000, 3400000, 4828000, 10467000, 20097000};
-    static String Kapitala[] = {"Amsterdam", "Andorra La Vieja", "Ankara", "Antananarivo",
-            "Apia", "Argel", "Asmara", "Asuncion", "Atenas", "Bagdad"};
+	/** Estatu Kodea. */
+	static String Kodea[] = { "31", "376", "90", "261", "685", "213", "291", "595", "30", "964" };
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+	/**  Estatua. */
+	static String Estatua[] = { "Holanda", "Andorra", "Turkia", "Madagascar", "Samoa Occidental", "Argelia", "Eritrea",
+			"Paraguay", "Grecia", "Irak" };
 
-        // Fitxategiaren izena eskatu
-        System.out.println("Sartu lan egingo duzun fitxategiaren izena:");
-        String fitxategiIzenaString = sc.nextLine() + ".txt"; // Añade la extensión .txt
+	/** Estatuko Bizi esperantza. */
+	static int BiziEsperantza[] = { 78, 0, 67, 52, 68, 70, 0, 68, 78, 66 };
 
-        // Eskatu direktorioa
-        String helbideOsoaString = EskatuDirektorioa(sc);
+	/** Estatua Data sortu. */
+	static LocalDate DataSortu[] = { LocalDate.of(1581, 7, 26), LocalDate.of(1993, 3, 14), LocalDate.of(1923, 10, 29),
+			LocalDate.of(1960, 6, 26), LocalDate.of(1962, 1, 1), LocalDate.of(1962, 7, 5), LocalDate.of(1993, 5, 24),
+			LocalDate.of(1825, 8, 25), LocalDate.of(1830, 2, 3), LocalDate.of(1958, 7, 14) };
 
-        // Konprobatu fitxategia
-        File fitxategia = KonprobatuEdoSortuFitxategia(helbideOsoaString, fitxategiIzenaString);
+	/** Estatuko Poblazioa. */
+	static double Poblazioa[] = { 15460000, 64000, 61058000, 13651000, 165000, 27959000, 3400000, 4828000, 10467000,
+			20097000 };
 
-        // Menú de opciones
-        int option;
-        do {
-            System.out.println("\nMenu:");
-            System.out.println("1. Fitxategia bete datuekin.");
-            System.out.println("2. Fitxategia hutsik utzi.");
-            System.out.println("3. Bilatu eta erakutsi fitxategiko iritzi bat bere kodearekin.");
-            System.out.println("4. Iritziak enumeratu (populazioaren arabera).");
-            System.out.println("5. Iritzi berri bat gehitu.");
-            System.out.println("6. Iritzi bat ezabatu.");
-            System.out.println("7. Kopiatu fitxategia.");
-            System.out.print("Aukeratu aukera (1-7): ");
-            option = sc.nextInt();
-            sc.nextLine(); // Consume the newline character
+	/** Estatuko Kapitala. */
+	static String Kapitala[] = { "Amsterdam", "Andorra La Vieja", "Ankara", "Antananarivo", "Apia", "Argel", "Asmara",
+			"Asuncion", "Atenas", "Bagdad" };
 
-            switch (option) {
-                case 1:
-                    fitxategiaBete(fitxategia);
-                    break;
-                case 2:
-                    fitxategiaHutsikUtzi(fitxategia, sc);
-                    break;
-                case 3:
-                    bilatuIritziBat(fitxategia, sc);
-                    break;
-                case 4:
-                    iritziakEnumeratu(fitxategia, sc);
-                    break;
-                case 5:
-                    iritziBerriBatGehitu(fitxategia, sc);
-                    break;
-                case 6:
-                    ezabatuIritziBat(fitxategia, sc);
-                    break;
-                case 7:
-                   kopiatuFitxategia(fitxategia, sc);
-                    break;
-                case 8:
-                    System.out.println("Irten da.");
-                    break;
-                default:
-                    System.out.println("Aukera ezegokia. Saiatu berriro.");
-            }
-        } while (option != 9);
-        sc.close();
-    }
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
 
-    public static String EskatuDirektorioa(Scanner sc) {
-        String helbideOsoaString;
-        File dirFile;
+		// Fitxategiaren izena eskatu
+		System.out.println("Sartu lan egingo duzun fitxategiaren izena:");
+		String fitxategiIzenaString = sc.nextLine() + ".txt"; // Añade la extensión .txt
 
-        // Eskatu direktorioa direktorio egoi bat sartu harte
-        do {
-            System.out.println("Sartu fitxategiaren helbide osoa:");
-            helbideOsoaString = sc.nextLine();
-            dirFile = new File(helbideOsoaString);
+		// Eskatu direktorioa
+		String helbideOsoaString = EskatuDirektorioa(sc);
 
-            // Konprobatu ea ruta ondo dagoen
-            if (!dirFile.isDirectory()) {
-                System.out.println("Ez da aurkitu direktorioa: " + helbideOsoaString);
-            }
-        } while (!dirFile.isDirectory());
+		// Konprobatu fitxategia
+		File fitxategia = KonprobatuEdoSortuFitxategia(helbideOsoaString, fitxategiIzenaString);
 
-        return helbideOsoaString;
-    }
+		// Aukera menua
+		int option;
+		do {
+			System.out.println("\n=============================");
+			System.out.println("           MENUA            ");
+			System.out.println("=============================");
+			System.out.println("1. 🗂️ Fitxategia bete datuekin   - Fitxategia datuekin osatzeko aukera.");
+			System.out.println("2. 🗑️ Fitxategia hutsik utzi     - Fitxategia hutsik uzteko aukera.");
+			System.out.println("3. 🔍 Bilatu eta erakutsi erregistroa  - Fitxategiko erregistro bat kodearekin bilatzeko aukera.");
+			System.out.println("4. 📊 Iritziak enumeratu          - Iritziak populazioaren arabera enumeratzeko aukera.");
+			System.out.println("5. ➕ Erregistroa berri bat gehitu      - Erregistro berri bat fitxategira gehitzeko aukera.");
+			System.out.println("6. ❌ Erregistroa bat ezabatu           - Fitxategiko erregistro bat ezabatzeko aukera.");
+			System.out.println("7. 📁 Kopiatu fitxategia          - Fitxategia beste direktorio batera kopiatzeko aukera.");
+			System.out.println("=============================");
+			System.out.print("Aukeratu aukera (1-7): ");
 
-    public static File KonprobatuEdoSortuFitxategia(String helbideOsoa, String fitxategiIzena) {
-        File dirFile = new File(helbideOsoa);
-        File fitxatefiosoaFile = new File(dirFile, fitxategiIzena);
+			option = sc.nextInt();
+			sc.nextLine();
 
-        // Konprobatu fitxategia
-        if (fitxatefiosoaFile.exists() && fitxatefiosoaFile.isFile()) {
-            System.out.println("Fitxategia existitzen da.");
-        } else {
-            System.out.println("Fitxategia ez dago, sortzen saiatuko da...");
+			switch (option) {
+			case 1:
+				fitxategiaBete(fitxategia);
+				break;
+			case 2:
+				fitxategiaHutsikUtzi(fitxategia, sc);
+				break;
+			case 3:
+				bilatuErregistroBat(fitxategia, sc);
+				break;
+			case 4:
+				iritziakEnumeratu(fitxategia, sc);
+				break;
+			case 5:
+				iritziBerriBatGehitu(fitxategia, sc);
+				break;
+			case 6:
+				ezabatuIritziBat(fitxategia, sc);
+				break;
+			case 7:
+				kopiatuFitxategia(fitxategia, sc);
+				break;
+			case 8:
+				System.out.println("Irten da.");
+				break;
+			default:
+				System.out.println("Aukera ezegokia. Saiatu berriro.");
+			}
+		} while (option != 9);
+		sc.close();
+	}
 
-            // Sortu fitxategia existitzen ez bada
-            try {
-                if (fitxatefiosoaFile.createNewFile()) {
-                    System.out.println("Fitxategia sortu da: " + fitxatefiosoaFile.getAbsolutePath());
+	/**
+	 * Eskatu direktorioa.
+	 *
+	 * @param sc gure eskanerra
+	 * @return gure direktorioa
+	 */
+	public static String EskatuDirektorioa(Scanner sc) {
+		String helbideOsoaString;
+		File dirFile;
 
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxatefiosoaFile))) {
-                        writer.write("PAISES 1.0");
-                        writer.newLine();
-                        System.out.println("Testua idatzi da fitxategian.");
-                    } catch (IOException e) {
-                        System.out.println("Errorea fitxategian testua idaztean: " + e.getMessage());
-                    }
-                } else {
-                    System.out.println("Ezin izan da fitxategia sortu.");
-                }
-            } catch (IOException e) {
-                System.out.println("Errorea fitxategia sortzean: " + e.getMessage());
-            }
-        }
-        return fitxatefiosoaFile;
-    }
+		// Eskatu direktorioa direktorio egoki bat sartu harte
+		do {
+			System.out.println("Sartu fitxategiaren helbide osoa:");
+			helbideOsoaString = sc.nextLine();
+			dirFile = new File(helbideOsoaString);
 
-    public static void fitxategiaBete(File fitxategia) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategia))) {
-            // Lehenengo lerroa idatzi
-            writer.write("PAISES 1.0");
-            writer.newLine();
+			// Konprobatu ea ruta ondo dagoen
+			if (!dirFile.isDirectory()) {
+				System.out.println("Ez da aurkitu direktorioa: " + helbideOsoaString);
+			}
+		} while (!dirFile.isDirectory());
 
-            // Idatzi datuak
-            for (int i = 0; i < Kodea.length; i++) {
-                writer.write(Kodea[i] + ";" + Estatua[i] + ";" + BiziEsperantza[i] + ";" + DataSortu[i] + ";" + Poblazioa[i] + ";" + Kapitala[i]);
-                writer.newLine();
-            }
-            System.out.println("Fitxategia datuekin bete da.");
-        } catch (IOException e) {
-            System.out.println("Errorea fitxategia idaztean: " + e.getMessage());
-        }
-    }
+		return helbideOsoaString;
+	}
 
-    public static void fitxategiaHutsikUtzi(File fitxategia, Scanner sc) {
-        System.out.println("Hutsik utzi nahi duzu fitxategia? (bai/ez)");
-        String confirmation = sc.nextLine();
-        if (confirmation.equalsIgnoreCase("bai")) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategia))) {
-                writer.write("PAISES 1.0");
-                writer.newLine(); // Asegúrate de que la primera línea se mantenga
-                System.out.println("Fitxategia hutsik utzi da.");
-            } catch (IOException e) {
-                System.out.println("Errorea fitxategia hutsik uztean: " + e.getMessage());
-            }
-        } else {
-            System.out.println("Ez da fitxategia hutsik utzi.");
-        }
-    }
+	/**
+	 * Konprobatu edo sortu fitxategia.
+	 *
+	 * @param helbideOsoa , fitxategiaren helbide osoa
+	 * @param fitxategiIzena, fitxategiaren izena
+	 * @return fitxategia
+	 */
+	public static File KonprobatuEdoSortuFitxategia(String helbideOsoa, String fitxategiIzena) {
+		File dirFile = new File(helbideOsoa);
+		File fitxatefiosoaFile = new File(dirFile, fitxategiIzena);
 
-    public static void bilatuIritziBat(File fitxategia, Scanner sc) {
-        System.out.println("Sartu kodea iritzi bat bilatzeko:");
-        String kodeaBilatu = sc.nextLine();
-        boolean found = false;
+		// Konprobatu fitxategia
+		if (fitxatefiosoaFile.exists() && fitxatefiosoaFile.isFile()) {
+			System.out.println("Fitxategia existitzen da.");
+		} else {
+			System.out.println("Fitxategia ez dago, sortzen saiatuko da...");
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(fitxategia))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith(kodeaBilatu + ";")) {
-                    System.out.println("Aurkitutako iritzia: " + line);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                System.out.println("Ez da aurkitu iritzi bat kodearekin: " + kodeaBilatu);
-            }
-        } catch (IOException e) {
-            System.out.println("Errorea fitxategia irakurtzean: " + e.getMessage());
-        }
-    }
+			// Sortu fitxategia existitzen ez bada
+			try {
+				if (fitxatefiosoaFile.createNewFile()) {
+					System.out.println("Fitxategia sortu da: " + fitxatefiosoaFile.getAbsolutePath());
 
-    public static void iritziakEnumeratu(File fitxategia, Scanner sc) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(fitxategia))) {
-            String line;
-            System.out.println("Iritziak (populazioaren arabera):");
-            while ((line = reader.readLine()) != null) {
-                if (!line.startsWith("PAISES")) { // Skip the header line
-                    String[] parts = line.split(";");
-                    System.out.println(parts[0] + ": " + parts[1] + " (Populazioa: " + parts[4] + ")");
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Errorea fitxategia irakurtzean: " + e.getMessage());
-        }
-    }
+					try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxatefiosoaFile))) {
+						writer.write("PAISES 1.0");
+						writer.newLine();
+						System.out.println("Testua idatzi da fitxategian.");
+					} catch (IOException e) {
+						System.out.println("Errorea fitxategian testua idaztean: " + e.getMessage());
+					}
+				} else {
+					System.out.println("Ezin izan da fitxategia sortu.");
+				}
+			} catch (IOException e) {
+				System.out.println("Errorea fitxategia sortzean: " + e.getMessage());
+			}
+		}
+		return fitxatefiosoaFile;
+	}
 
-    public static void iritziBerriBatGehitu(File fitxategia, Scanner sc) {
-        System.out.println("Sartu iritzi berriaren kodea:");
-        String kodea = sc.nextLine();
-        System.out.println("Sartu iritzi berriaren izena:");
-        String izena = sc.nextLine();
-        System.out.println("Sartu iritzi berriaren bizi esperantza:");
-        int biziEsperantza = sc.nextInt();
-        System.out.println("Sartu iritzi berriaren sortze-data (YYYY-MM-DD formatua):");
-        String dataSortuString = sc.next();
-        LocalDate dataSortu = LocalDate.parse(dataSortuString);
-        System.out.println("Sartu iritzi berriaren populazioa:");
-        double populazioa = sc.nextDouble();
-        sc.nextLine(); // Consume the newline character
-        System.out.println("Sartu iritzi berriaren kapitulua:");
-        String kapitulua = sc.nextLine();
+	/**
+	 * Fitxategia bete.
+	 *
+	 * @param fitxategia , gure fitxategia
+	 */
+	public static void fitxategiaBete(File fitxategia) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategia))) {
+			// Lehenengo lerroa idatzi
+			writer.write("PAISES 1.0");
+			writer.newLine();
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategia, true))) {
-            writer.write(kodea + ";" + izena + ";" + biziEsperantza + ";" + dataSortu + ";" + populazioa + ";" + kapitulua);
-            writer.newLine();
-            System.out.println("Iritzi berri bat gehitu da.");
-        } catch (IOException e) {
-            System.out.println("Errorea iritzi berri bat gehitzean: " + e.getMessage());
-        }
-    }
+			// Idatzi datuak
+			for (int i = 0; i < Kodea.length; i++) {
+				writer.write(Kodea[i] + ";" + Estatua[i] + ";" + BiziEsperantza[i] + ";" + DataSortu[i] + ";"
+						+ Poblazioa[i] + ";" + Kapitala[i]);
+				writer.newLine();
+			}
+			System.out.println("Fitxategia datuekin bete da.");
+		} catch (IOException e) {
+			System.out.println("Errorea fitxategia idaztean: " + e.getMessage());
+		}
+	}
 
-    public static void ezabatuIritziBat(File fitxategia, Scanner sc) {
-        System.out.println("Sartu ezabatu nahi duzun iritzia (kodea): ");
-        String kodeaEzabatu = sc.nextLine();
+	/**
+	 * Fitxategia hutsik utzi.
+	 *
+	 * @param fitxategia , gure fitxategia
+	 * @param sc , eskanerra
+	 */
+	public static void fitxategiaHutsikUtzi(File fitxategia, Scanner sc) {
+		System.out.println("Hutsik utzi nahi duzu fitxategia? (bai/ez)");
+		String confirmation = sc.nextLine();
+		if (confirmation.equalsIgnoreCase("bai")) {
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategia))) {
+				writer.write("PAISES 1.0");
+				writer.newLine(); // Lehen lerroa mantendu
+				System.out.println("Fitxategia hutsik utzi da.");
+			} catch (IOException e) {
+				System.out.println("Errorea fitxategia hutsik uztean: " + e.getMessage());
+			}
+		} else {
+			System.out.println("Ez da fitxategia hutsik utzi.");
+		}
+	}
 
-        File fitxategiAuxiliar = new File(fitxategia.getParent(), "auxiliar_" + fitxategia.getName());
-        
-        try (BufferedReader reader = new BufferedReader(new FileReader(fitxategia));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategiAuxiliar))) {
-            
-            String line;
-            boolean encontrado = false;
+	/**
+	 * Bilatu Erregistro bat.
+	 *
+	 * @param fitxategia the fitxategia
+	 * @param sc the sc
+	 */
+	public static void bilatuErregistroBat(File fitxategia, Scanner sc) {
+		System.out.println("Sartu kodea erregistroa bat bilatzeko:");
+		String kodeaBilatu = sc.nextLine();
+		boolean found = false;
 
-            while ((line = reader.readLine()) != null) {
-                // Verifica si la línea contiene el código que queremos eliminar
-                if (line.startsWith(kodeaEzabatu + ";")) {
-                    System.out.println("Aurkitutako iritzia: " + line);
-                    System.out.println("Ziur ezabatu nahi duzula? (bai/ez)");
-                    String confirmation = sc.nextLine();
-                    
-                    if (confirmation.equalsIgnoreCase("bai")) {
-                        encontrado = true; // Marcamos que encontramos el registro y se eliminará
-                        System.out.println("Iritzia ezabatuko da.");
-                    } else {
-                        // Si no confirmamos, escribimos la línea en el archivo auxiliar
-                        writer.write(line);
-                        writer.newLine();
-                    }
-                } else {
-                    // Si no es el registro que queremos eliminar, lo copiamos al auxiliar
-                    writer.write(line);
-                    writer.newLine();
-                }
-            }
+		try (BufferedReader reader = new BufferedReader(new FileReader(fitxategia))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith(kodeaBilatu + ";")) {
+					System.out.println("Aurkitutako erregistroa: " + line);
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				System.out.println("Ez da aurkitu erregistro bat kodearekin: " + kodeaBilatu);
+			}
+		} catch (IOException e) {
+			System.out.println("Errorea fitxategia irakurtzean: " + e.getMessage());
+		}
+	}
 
-            if (!encontrado) {
-                System.out.println("Ez da aurkitu iritzia kodearekin: " + kodeaEzabatu);
-            }
-        } catch (IOException e) {
-            System.out.println("Errorea fitxategia irakurtzean edo idaztean: " + e.getMessage());
-            return;
-        }
+	/**
+	 * Erregistroak enumeratu.
+	 *
+	 * @param fitxategia the fitxategia
+	 * @param sc the sc
+	 */
+	public static void iritziakEnumeratu(File fitxategia, Scanner sc) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(fitxategia))) {
+			String line;
+			System.out.println("Erregistroak (populazioaren arabera):");
+			while ((line = reader.readLine()) != null) {
+				if (!line.startsWith("PAISES")) { // Salto egin lehen lerroa PAISES 1.0
+					String[] parts = line.split(";");
+					System.out.println(parts[0] + ": " + parts[1] + " (Populazioa: " + parts[4] + ")");
+				}
+			}
+		} catch (IOException e) {
+			System.out.println("Errorea fitxategia irakurtzean: " + e.getMessage());
+		}
+	}
 
-        // Borramos el archivo original
-        if (fitxategia.delete()) {
-            System.out.println("Fitxategia jadanik ezabatuta.");
-        } else {
-            System.out.println("Errorea fitxategia ezabatzean.");
-            return;
-        }
+	/**
+	 * Iritzi berri bat gehitu.
+	 *
+	 * @param fitxategia, gure fitxategia
+	 * @param sc. eskanerra
+	 */
+	public static void iritziBerriBatGehitu(File fitxategia, Scanner sc) {
+		System.out.println("Sartu erregistro berriaren kodea:");
+		String kodea = sc.nextLine();
+		System.out.println("Sartu erregistro berriaren izena:");
+		String izena = sc.nextLine();
+		System.out.println("Sartu erregistro berriaren bizi esperantza:");
+		int biziEsperantza = sc.nextInt();
+		System.out.println("Sartu erregistro berriaren sortze-data (YYYY-MM-DD formatua):");
+		String dataSortuString = sc.next();
+		LocalDate dataSortu = LocalDate.parse(dataSortuString);
+		System.out.println("Sartu erregistro berriaren populazioa:");
+		double populazioa = sc.nextDouble();
+		sc.nextLine(); 
+		System.out.println("Sartu erregistro berriaren kapitulua:");
+		String kapitulua = sc.nextLine();
 
-        // Renombramos el archivo auxiliar
-        if (fitxategiAuxiliar.renameTo(fitxategia)) {
-            System.out.println("Fitxategia berriz izendatua: " + fitxategia.getName());
-        } else {
-            System.out.println("Errorea fitxategia berriz izendatzean.");
-        }
-    }
-    public static void kopiatuFitxategia(File fitxategia, Scanner sc) {
-        // Verificar si el archivo de origen existe
-        if (!fitxategia.exists()) {
-            System.out.println("Errorea: Fitxategia ez da aurkitu: " + fitxategia.getAbsolutePath());
-            return;
-        }
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategia, true))) {
+			writer.write(
+					kodea + ";" + izena + ";" + biziEsperantza + ";" + dataSortu + ";" + populazioa + ";" + kapitulua);
+			writer.newLine();
+			System.out.println("Erregistro berri bat gehitu da.");
+		} catch (IOException e) {
+			System.out.println("Errorea erregistro berri bat gehitzean: " + e.getMessage());
+		}
+	}
 
-        System.out.println("Sartu kopia gorde nahi duzun direktorioaren helbidea:");
-        String direktorioString = sc.nextLine();
-        File direktorio = new File(direktorioString);
+	/**
+	 * Ezabatu iritzi bat.
+	 *
+	 * @param fitxategia , gure fitxategia
+	 * @param sc, eskanerra
+	 */
+	public static void ezabatuIritziBat(File fitxategia, Scanner sc) {
+		System.out.println("Sartu ezabatu nahi duzun Erregistroa (kodea): ");
+		String kodeaEzabatu = sc.nextLine();
 
-        // Verificar que el directorio existe
-        if (!direktorio.isDirectory()) {
-            System.out.println("Errorea: Ez da aurkitu direktorioa: " + direktorioString);
-            return;
-        }
+		File fitxategiAuxiliar = new File(fitxategia.getParent(), "auxiliar_" + fitxategia.getName());
 
-        System.out.println("Sartu kopia gorde nahi duzun fitxategiaren izena : ");
-        String izenaKopia = sc.nextLine() + ".txt";
+		try (BufferedReader reader = new BufferedReader(new FileReader(fitxategia));
+				BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategiAuxiliar))) {
 
-        // Verificar que el nombre no esté vacío
-        if (izenaKopia.trim().isEmpty()) {
-            System.out.println("Errorea: Fitxategiaren izena hutsa da.");
-            return;
-        }
+			String line;
+			boolean aurkituta = false;
 
-        Path fitxategiDestinokoa = Paths.get(direktorio.getAbsolutePath(), izenaKopia);
+			while ((line = reader.readLine()) != null) {
+				// Konprobatu sartutako kodea
+				if (line.startsWith(kodeaEzabatu + ";")) {
+					System.out.println("Aurkitutako erregistroa: " + line);
+					System.out.println("Ziur ezabatu nahi duzula? (bai/ez)");
+					String confirmation = sc.nextLine();
 
-        // Verificar que no existe un archivo con el mismo nombre en la ubicación de destino
-        if (Files.exists(fitxategiDestinokoa)) {
-            System.out.println("Errorea: Fitxategi honekin berdina dago jadanik: " + fitxategiDestinokoa.toAbsolutePath());
-            return;
-        }
+					if (confirmation.equalsIgnoreCase("bai")) {
+						aurkituta = true; // Erregistroa aurkitu bada markatu
+						System.out.println("Iritzia ezabatuko da.");
+					} else {
 
-        // Crear la copia del archivo
-        try {
-            Files.copy(fitxategia.toPath(), fitxategiDestinokoa);
-            System.out.println("Fitxategia kopiatuta: " + fitxategiDestinokoa.toAbsolutePath());
-        } catch (IOException e) {
-            System.out.println("Errorea fitxategia kopiatzean: " + e.getMessage());
-        }
-    }
+						writer.write(line);
+						writer.newLine();
+					}
+				} else {
+
+					writer.write(line);
+					writer.newLine();
+				}
+			}
+
+			if (!aurkituta) {
+				System.out.println("Ez da aurkitu erregistroa kodearekin: " + kodeaEzabatu);
+			}
+		} catch (IOException e) {
+			System.out.println("Errorea fitxategia irakurtzean edo idaztean: " + e.getMessage());
+			return;
+		}
+
+
+		if (fitxategia.delete()) {
+			System.out.println("Fitxategia jadanik ezabatuta.");
+		} else {
+			System.out.println("Errorea fitxategia ezabatzean.");
+			return;
+		}
+
+
+		if (fitxategiAuxiliar.renameTo(fitxategia)) {
+			System.out.println("Fitxategia berriz izendatua: " + fitxategia.getName());
+		} else {
+			System.out.println("Errorea fitxategia berriz izendatzean.");
+		}
+	}
+
+	/**
+	 * Kopiatu fitxategia.
+	 *
+	 * @param fitxategia, gure fitxategia
+	 * @param sc, gure eskanerra
+	 */
+	public static void kopiatuFitxategia(File fitxategia, Scanner sc) {
+
+		if (!fitxategia.exists()) {
+			System.out.println("Errorea: Fitxategia ez da aurkitu: " + fitxategia.getAbsolutePath());
+			return;
+		}
+
+		System.out.println("Sartu kopia gorde nahi duzun direktorioaren helbidea:");
+		String direktorioString = sc.nextLine();
+		File direktorio = new File(direktorioString);
+
+		// Konrpobatu direktorioa
+		if (!direktorio.isDirectory()) {
+			System.out.println("Errorea: Ez da aurkitu direktorioa: " + direktorioString);
+			return;
+		}
+
+		System.out.println("Sartu kopia gorde nahi duzun fitxategiaren izena : ");
+		String izenaKopia = sc.nextLine() + ".txt";
+
+		// konprobatu izena ez dagoela hutsik
+		if (izenaKopia.trim().isEmpty()) {
+			System.out.println("Errorea: Fitxategiaren izena hutsa da.");
+			return;
+		}
+
+		Path fitxategiDestinokoa = Paths.get(direktorio.getAbsolutePath(), izenaKopia);
+
+		// Konrpobatu ize berdinarekin ez dagoela fitxategirik
+		if (Files.exists(fitxategiDestinokoa)) {
+			System.out.println(
+					"Errorea: Fitxategi honen berdina dago jadanik: " + fitxategiDestinokoa.toAbsolutePath());
+			return;
+		}
+
+		//Fitxategia kopiatu
+		try {
+			Files.copy(fitxategia.toPath(), fitxategiDestinokoa);
+			System.out.println("Fitxategia kopiatuta: " + fitxategiDestinokoa.toAbsolutePath());
+		} catch (IOException e) {
+			System.out.println("Errorea fitxategia kopiatzean: " + e.getMessage());
+		}
+	}
 }
