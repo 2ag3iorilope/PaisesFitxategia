@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 // TODO: Auto-generated Javadoc
@@ -69,13 +71,15 @@ public class PaisFitxategiak {
 			System.out.println("=============================");
 			System.out.println("1. 🗂️ Fitxategia bete datuekin   - Fitxategia datuekin osatzeko aukera.");
 			System.out.println("2. 🗑️ Fitxategia hutsik utzi     - Fitxategia hutsik uzteko aukera.");
-			System.out.println("3. 🔍 Bilatu eta erakutsi erregistroa  - Fitxategiko erregistro bat kodearekin bilatzeko aukera.");
-			System.out.println("4. 📊 Iritziak enumeratu          - Iritziak populazioaren arabera enumeratzeko aukera.");
-			System.out.println("5. ➕ Erregistroa berri bat gehitu      - Erregistro berri bat fitxategira gehitzeko aukera.");
-			System.out.println("6. ❌ Erregistroa bat ezabatu           - Fitxategiko erregistro bat ezabatzeko aukera.");
+			System.out.println("3. 🔍 Bilatu eta erakutsi erregistroa  - Fitxategiko iritzi bat kodearekin bilatzeko aukera.");
+			System.out.println("4. 📊 Iritziak enumeratu          - Erregistroa populazioaren arabera enumeratzeko aukera.");
+			System.out.println("5. ➕ Erregistro berri bat gehitu      - Iritzi berri bat fitxategira gehitzeko aukera.");
+			System.out.println("6. ❌ Erregistro bat ezabatu           - Fitxategiko erregistro bat ezabatzeko aukera.");
 			System.out.println("7. 📁 Kopiatu fitxategia          - Fitxategia beste direktorio batera kopiatzeko aukera.");
+			System.out.println("8. 📜 Kontatu fitxategiko lerroak  - Fitxategiko lerroen kopurua kontatzeko aukera (PAISES 1.0 barne ez).");
+			 System.out.println("9. ✏️ Iritzi bat editatu");
 			System.out.println("=============================");
-			System.out.print("Aukeratu aukera (1-7): ");
+			System.out.print("Aukeratu aukera (1-9): ");
 
 			option = sc.nextInt();
 			sc.nextLine();
@@ -103,12 +107,15 @@ public class PaisFitxategiak {
 				kopiatuFitxategia(fitxategia, sc);
 				break;
 			case 8:
-				System.out.println("Irten da.");
+				kontatuFitxategikoLerroak(fitxategia);
 				break;
+			case 9:
+			    editatuIritziBat(fitxategia, sc);
+			    break;
 			default:
 				System.out.println("Aukera ezegokia. Saiatu berriro.");
 			}
-		} while (option != 9);
+		} while (option != 10);
 		sc.close();
 	}
 
@@ -415,4 +422,114 @@ public class PaisFitxategiak {
 			System.out.println("Errorea fitxategia kopiatzean: " + e.getMessage());
 		}
 	}
+	/**
+	 * Kontatu fitxategiko lerroak.
+	 *
+	 * @param fitxategia the fitxategia
+	 */
+	/**
+	 * Kontatu fitxategiko lerroak.
+	 *
+	 * @param fitxategia the fitxategia
+	 */
+	public static void kontatuFitxategikoLerroak(File fitxategia) {
+	    int lineCount = 0;
+	    boolean isFirstLine = true; // Bandera para la primera línea
+
+	    try (BufferedReader reader = new BufferedReader(new FileReader(fitxategia))) {
+	        String line;
+	        while ((line = reader.readLine()) != null) {
+	            if (isFirstLine) {
+	                isFirstLine = false; // Marcar que ya hemos leído la primera línea
+	                continue; // Ignorar la primera línea
+	            }
+	            lineCount++; // Contar líneas después de la primera
+	        }
+	        System.out.println("Fitxategiak " + lineCount + " lerro ditu (PAISES 1.0 ezik).");
+	    } catch (IOException e) {
+	        System.out.println("Errorea fitxategia irakurtzean: " + e.getMessage());
+	    }
+	}
+	 public static void modificarErregistroa(String fitxategia, Scanner scanner) {
+	        System.out.print("Sartu aldatu nahi duzun erregistroaren kodea: ");
+	        String kodea = scanner.nextLine();
+	        List<String> erregistroak = new ArrayList<>();
+	        boolean encontrado = false;
+
+	        // Leer el archivo y buscar el registro
+	        try (BufferedReader reader = new BufferedReader(new FileReader(fitxategia))) {
+	            String linea;
+	            while ((linea = reader.readLine()) != null) {
+	                if (linea.startsWith(kodea + ",")) {
+	                    // Si encontramos el registro, pedimos los nuevos valores
+	                    System.out.println("Erregistro aurkitu: " + linea);
+	                    System.out.print("Sartu berri nahi duzun informazioa (separatzaile gisa ','): ");
+	                    String nuevoRegistro = scanner.nextLine();
+	                    erregistroak.add(nuevoRegistro);
+	                    encontrado = true;
+	                } else {
+	                    erregistroak.add(linea); // Añadir otras líneas sin cambios
+	                }
+	            }
+	        } catch (IOException e) {
+	            System.out.println("Errorea fitxategia irakurtzean: " + e.getMessage());
+	        }
+
+	        // Escribir de nuevo en el archivo
+	        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategia))) {
+	            for (String registro : erregistroak) {
+	                writer.write(registro);
+	                writer.newLine();
+	            }
+	            if (encontrado) {
+	                System.out.println("Erregistroa eguneratu da.");
+	            } else {
+	                System.out.println("Erregistroa ez da aurkitu.");
+	            }
+	        } catch (IOException e) {
+	            System.out.println("Errorea fitxategira idaztean: " + e.getMessage());
+	        }
+	    }
+	 
+	 
+	 public static void editatuIritziBat(File fitxategia, Scanner sc) {
+		    System.out.println("Sartu editatu nahi duzun iritzia (kodea):");
+		    String iritzia = sc.nextLine();
+		    File fitxategiBerria = new File(fitxategia.getParent(), "temp.txt");
+
+		    try (BufferedReader reader = new BufferedReader(new FileReader(fitxategia));
+		         BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategiBerria))) {
+		        String line;
+		        boolean found = false;
+		        while ((line = reader.readLine()) != null) {
+		            if (line.contains(iritzia)) {
+		                found = true;
+		                System.out.println("Aurkitutako iritzia: " + line);
+		                System.out.println("Sartu iritzia eguneratu nahi dituzun datuak (kodea; estatua; bizi-esperantza; data; populazioa; kapitala):");
+		                String newIritzi = sc.nextLine();
+		                writer.write(newIritzi);
+		                writer.newLine();
+		                System.out.println("Iritzia eguneratu da.");
+		            } else {
+		                writer.write(line);
+		                writer.newLine();
+		            }
+		        }
+		        if (!found) {
+		            System.out.println("Ez da aurkitu iritzia: " + iritzia);
+		        }
+		    } catch (IOException e) {
+		        System.out.println("Errorea iritzia editatzean: " + e.getMessage());
+		    }
+
+		    if (!fitxategia.delete()) {
+		        System.out.println("Errorea fitxategia ezabatzean.");
+		        return;
+		    }
+
+		    if (!fitxategiBerria.renameTo(fitxategia)) {
+		        System.out.println("Errorea fitxategia berriz izendatzean.");
+		    }
+		}
+	 
 }
