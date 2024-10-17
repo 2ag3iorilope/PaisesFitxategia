@@ -1,7 +1,9 @@
 package PaisFitxategia;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -34,6 +36,18 @@ public class PaisFitxategiak {
 		KonprobatuEdoSortuFitxategia(helbideOsoaString, fitxategiIzenaString);
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * Eskatu direktorioa.
 	 * Metodo honek lan egin nahi duen direktorio osoa eskatzen dio erabiltzaileari. 
@@ -71,36 +85,46 @@ public class PaisFitxategiak {
 	 */
 	public static void KonprobatuEdoSortuFitxategia(String helbideOsoa, String fitxategiIzena) {
 
-		File dirFile = new File(helbideOsoa);
+        File dirFile = new File(helbideOsoa);
+        File fitxatefiosoaFile = new File(dirFile, fitxategiIzena);
 
-
-		File fitxatefiosoaFile = new File(dirFile, fitxategiIzena);
-
-		//Konprobatu fitxategia
-		if (fitxatefiosoaFile.exists() && fitxatefiosoaFile.isFile()) {
-			System.out.println("Fitxategia existitzen da.");
-		} else {
-			System.out.println("Fitxategia ez dago, sortzen saiatuko da...");
-
-			// Sortu fitxategia existitzen ez bada
-			try {
-				if (fitxatefiosoaFile.createNewFile()) {
-					System.out.println("Fitxategia sortu da: " + fitxatefiosoaFile.getAbsolutePath());
-
-
-					try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxatefiosoaFile))) {
-						writer.write("PAISES 1.0");
-						writer.newLine(); 
-						System.out.println("Testua idatzi da fitxategian.");
-					} catch (IOException e) {
-						System.out.println("Errorea fitxategian testua idaztean: " + e.getMessage());
-					}
-				} else {
-					System.out.println("Ezin izan da fitxategia sortu.");
-				}
-			} catch (IOException e) {
-				System.out.println("Errorea fitxategia sortzean: " + e.getMessage());
-			}
-		}
-	}
+        // Konprobatu fitxategia
+        if (fitxatefiosoaFile.exists() && fitxatefiosoaFile.isFile()) {
+            System.out.println("Fitxategia existitzen da.");
+            // Irakurri lehenengo lerroa
+            try (BufferedReader reader = new BufferedReader(new FileReader(fitxatefiosoaFile))) {
+                String firstLine = reader.readLine();
+                if ("PAISES 1.0".equals(firstLine)) {
+                    System.out.println("Lehenengo lerroa zuzena da: " + firstLine);
+                } else {
+                    System.out.println("Lehenengo lerroa ez da zuzena: " + firstLine);
+                    // Lehenengo lerroa gaizki badago, fitxategia berridatzi
+                    System.out.println("Lehenengo lerroa zuzentzen...");
+                    BerridatziFitxategia(fitxatefiosoaFile);
+                }
+            } catch (IOException e) {
+                System.out.println("Errorea fitxategia irakurtzean: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Fitxategia ez dago, sortzen saiatuko da...");
+            // Fitxategia sortu
+            BerridatziFitxategia(fitxatefiosoaFile);
+        }
+    }
+	 /**
+     * Metodo honek fitxategia berridazten du lehenengo lerroa "PAISES 1.0" izateko.
+     * @param fitxategia Gure fitxategia.
+     */
+    public static void BerridatziFitxategia(File fitxategia) {
+        try {
+            // Fitxategia sortu edo berridatzi
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fitxategia))) {
+                writer.write("PAISES 1.0");
+                writer.newLine();
+                System.out.println("Fitxategia berridatzi da eta lehen lerroa zuzen jarri da: PAISES 1.0");
+            }
+        } catch (IOException e) {
+            System.out.println("Errorea fitxategia sortzean edo berridaztean: " + e.getMessage());
+        }
+    }
 }
